@@ -21,11 +21,10 @@ import java.util.Map;
 @RestController
 @RequestMapping(value = "/")
 public class DepartmentController extends GlobalExceptionHandler {
-    @Autowired
     private DepartmentService departmentService;
 
     @GetMapping(value = "/departments",produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Department>> departments() throws ResourceExceptions {
+    public ResponseEntity<List<Department>> departments() {
         return new ResponseEntity<>(departmentService.departmentList(), HttpStatus.OK);
     }
 
@@ -45,13 +44,13 @@ public class DepartmentController extends GlobalExceptionHandler {
         return ResponseEntity.ok().body(department);
     }
 
-    //sehvdir
+
     @PutMapping(value = "/updateDepartment",consumes = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody ResponseEntity updateDepartment(@RequestBody ReqDepartment reqDepartment) throws ResourceExceptions {
-        if (departmentService.getDepartmentById(reqDepartment.getId()) == null)
+        if (!departmentService.getDepartmentById(reqDepartment.getId()).isPresent())
             throw new ResourceExceptions("Department not found for this id: "+reqDepartment.getId());
         else if (departmentService.updateDepartment(reqDepartment)==null)
-            return
+            throw new NullPointerException("Department name: "+reqDepartment.getName());
         //departmentService.updateDepartment(reqDepartment);
         return ResponseEntity.ok().body(departmentService.updateDepartment(reqDepartment));
     }
